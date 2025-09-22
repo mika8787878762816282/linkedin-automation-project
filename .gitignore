@@ -1,0 +1,29 @@
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# Node.js
+node_modules/
+.pnpm-store/
+
+# Logs
+*.log
+
+# Database
+*.db
+
+# CVs générés
+*.pdf
+
+# Fichiers temporaires
+*.tmp
+
+
+
+
+job-automation-frontend/job-automation-ui/node_modules/
+job-automation-frontend/job-automation-ui/.pnpm-store/
+
+

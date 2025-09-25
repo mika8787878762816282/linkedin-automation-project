@@ -18,15 +18,15 @@ zapier_bp = Blueprint("zapier", __name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# --- Informations de profil et tokens (à charger depuis des variables d\"environnement en production) ---
+# --- Informations de profil et tokens (à charger depuis des variables d'environnement en production) ---
 PROFILE_INFO = {
     "name": "Michaël Sibony",
     "email": "Michaelsibony0@gmail.com",
     "phone": "+33 6 12 34 56 78",
     "linkedin": "https://www.linkedin.com/in/michaelsibony/",
-    "summary": "Développeur Full Stack passionné avec 5 ans d\"expérience dans le développement web et mobile, spécialisé en React, Node.js et Python.",
+    "summary": "Développeur Full Stack passionné avec 5 ans d'expérience dans le développement web et mobile, spécialisé en React, Node.js et Python.",
     "skills": ["React", "Node.js", "Python", "Flask", "JavaScript", "HTML", "CSS", "SQL", "NoSQL", "AWS", "Docker"],
-    "experience": "Développeur Senior chez Tech Solutions (2022-Présent) - Développement et maintenance d\"applications web complexes. Développeur Junior chez Web Innovations (2020-2022) - Contribution au développement de nouvelles fonctionnalités.",
+    "experience": "Développeur Senior chez Tech Solutions (2022-Présent) - Développement et maintenance d'applications web complexes. Développeur Junior chez Web Innovations (2020-2022) - Contribution au développement de nouvelles fonctionnalités.",
     "education": "Master en Informatique, Université de Paris (2019)"
 }
 
@@ -55,7 +55,7 @@ def handle_linkedin_email_webhook():
         
         logger.info(f"E-mail LinkedIn reçu de {sender}: {email_subject}")
         
-        # 1. Analyse du type de poste et de l\"offre
+        # 1. Analyse du type de poste et de l'offre
         job_type = analyze_job_type(email_subject, email_body) # Fonction du fichier zapier_integration.py
         job_details = analyze_job_offer({"subject": email_subject, "body": email_body})
         
@@ -63,18 +63,18 @@ def handle_linkedin_email_webhook():
         company_name = job_details.get("company", "Entreprise inconnue")
         
         # Générer un ID unique pour la candidature
-        job_id = f"app_{datetime.now().strftime("%Y%m%d%H%M%S")}_{hash(email_subject) % 10000}"
+        job_id = f"app_{datetime.now().strftime('%Y%m%d%H%M%S')}_{hash(email_subject) % 10000}"
 
         # 2. Suivi de la candidature (initialisation)
         track_application(job_id, company_name, job_title, "Reçue - En traitement", job_details)
 
         # 3. Génération du CV personnalisé (PDF)
-        cv_filename = f"cv_{PROFILE_INFO["name"].replace(" ", "_")}_{company_name.replace(" ", "_")}.pdf"
+        cv_filename = f"cv_{PROFILE_INFO['name'].replace(' ', '_')}_{company_name.replace(' ', '_')}.pdf"
         generate_cv_pdf(PROFILE_INFO, job_details, cv_filename)
         logger.info(f"CV PDF généré: {cv_filename}")
 
-        # 4. Création d\"un projet GitHub réel
-        project_name = f"Projet_{job_title.replace(" ", "_")}_{company_name.replace(" ", "_")}"
+        # 4. Création d'un projet GitHub réel
+        project_name = f"Projet_{job_title.replace(' ', '_')}_{company_name.replace(' ', '_')}"
         github_project_url = create_github_project({
             "name": project_name,
             "description": f"Projet de démonstration pour le poste de {job_title} chez {company_name}.",
@@ -84,10 +84,10 @@ def handle_linkedin_email_webhook():
 
         # 5. Envoi de la réponse automatique
         response_subject = f"Candidature pour le poste de {job_title} chez {company_name}"
-        response_body = f"Bonjour,\n\nJe vous remercie pour l\"opportunité de postuler au poste de {job_title} chez {company_name}.\n\nVous trouverez ci-joint mon CV personnalisé pour ce poste. Vous pouvez également consulter un projet pertinent sur GitHub : {github_project_url}\n\nJe suis très enthousiaste à l\"idée de discuter de cette opportunité.\n\nCordialement,\n{PROFILE_INFO["name"]}"
+        response_body = f"""Bonjour,\n\nJe vous remercie pour l'opportunité de postuler au poste de {job_title} chez {company_name}.\n\nVous trouverez ci-joint mon CV personnalisé pour ce poste. Vous pouvez également consulter un projet pertinent sur GitHub : {github_project_url}\n\nJe suis très enthousiaste à l'idée de discuter de cette opportunité.\n\nCordialement,\n{PROFILE_INFO['name']}"""
         
-        # Assurez-vous que l\"expéditeur est une adresse valide pour envoyer la réponse
-        # Pour l\"instant, nous envoyons à l\"expéditeur de l\"e-mail LinkedIn
+        # Assurez-vous que l'expéditeur est une adresse valide pour envoyer la réponse
+        # Pour l'instant, nous envoyons à l'expéditeur de l'e-mail LinkedIn
         send_success = send_automated_response(GMAIL_ADDRESS, GMAIL_APP_PASSWORD, sender, response_subject, response_body, attachments=[cv_filename])
         
         if send_success:
@@ -95,7 +95,7 @@ def handle_linkedin_email_webhook():
             logger.info(f"Réponse automatique envoyée à {sender}.")
         else:
             track_application(job_id, company_name, job_title, "Échec envoi réponse", {"github_url": github_project_url, "cv_file": cv_filename})
-            logger.error(f"Échec de l\"envoi de la réponse automatique à {sender}.")
+            logger.error(f"Échec de l'envoi de la réponse automatique à {sender}.")
 
         # Nettoyage du fichier CV temporaire
         if os.path.exists(cv_filename):
@@ -119,7 +119,7 @@ def handle_linkedin_email_webhook():
 
 def analyze_job_type(subject, body):
     """
-    Analyse le contenu de l\"e-mail pour déterminer le type de poste.
+    Analyse le contenu de l'e-mail pour déterminer le type de poste.
     """
     content = (subject + " " + body).lower()
     
@@ -147,7 +147,7 @@ def analyze_job_type(subject, body):
 
 def route_to_specialized_ai(job_type, email_data):
     """
-    Simule le routage de l\"e-mail vers l\"IA spécialisée appropriée.
+    Simule le routage de l'e-mail vers l'IA spécialisée appropriée.
     Dans une implémentation réelle, cela ferait un appel HTTP vers un autre service.
     """
     ai_specialists = {
@@ -190,13 +190,13 @@ def route_to_specialized_ai(job_type, email_data):
     
     specialist = ai_specialists.get(job_type, ai_specialists["general"])
     
-    logger.info(f"Simulating routing to {specialist["name"]} for job type {job_type}.")
-    # Ici, on pourrait faire un appel HTTP vers l\"IA spécialisée
+    logger.info(f"Simulating routing to {specialist['name']} for job type {job_type}.")
+    # Ici, on pourrait faire un appel HTTP vers l'IA spécialisée
     
     return {
         "specialist": specialist,
         "status": "routed",
-        "message": f"E-mail routé vers {specialist["name"]}"
+        "message": f"E-mail routé vers {specialist['name']}"
     }
 
 @zapier_bp.route("/zapier/webhook/test", methods=["POST", "GET"])
@@ -225,7 +225,7 @@ def test_webhook():
 @cross_origin()
 def get_zapier_config():
     """
-    Retourne la configuration pour l\"intégration Zapier
+    Retourne la configuration pour l'intégration Zapier
     """
     config = {
         "webhooks": {

@@ -1,38 +1,67 @@
-
 import imaplib
 import email
 from email.header import decode_header
-import re
+import logging
+import os
+
+"""
+LinkedIn Email Monitor Module
+=============================
+
+This module provides functionality to monitor LinkedIn-related emails
+and extract job offers from them.
+
+Functions:
+    - monitor_linkedin_emails: Connects to an IMAP server, searches for LinkedIn job offer emails,
+      and extracts relevant information.
+
+Dependencies:
+    - imaplib
+    - email
+    - logging
+    - os
+"""
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 def monitor_linkedin_emails(email_address, app_password):
     """
     Surveille les e-mails LinkedIn et extrait les offres d'emploi.
-    Cette fonction est principalement destinée à être appelée par Zapier via un webhook,
-    mais elle contient la logique d'extraction si nécessaire pour une utilisation directe.
+
+    Args:
+        email_address (str): L'adresse e-mail à surveiller.
+        app_password (str): Le mot de passe d'application pour l'authentification IMAP.
+
+    Returns:
+        list: Une liste de dictionnaires, chaque dictionnaire représentant une offre d'emploi.
     """
+    job_offers = []
     try:
         mail = imaplib.IMAP4_SSL("imap.gmail.com")
         mail.login(email_address, app_password)
         mail.select("inbox")
 
         # Rechercher les e-mails de LinkedIn
-        status, email_ids = mail.search(None, 
-                                        f'FROM "linkedin.com" OR FROM "linkedin.com"',
-                                        f'SUBJECT "offre d\'emploi" OR SUBJECT "poste" OR SUBJECT "recrutement"')
+        search_criteria = 'FROM "linkedin.com" SUBJECT "offre d\\'emploi"'
+        _, email_ids = mail.search(None, search_criteria)
         email_ids = email_ids[0].split()
 
-        job_offers = []
         for e_id in email_ids:
-            status, msg_data = mail.fetch(e_id, "(RFC822)")
+            _, msg_data = mail.fetch(e_id, "(RFC822)")
             for response_part in msg_data:
                 if isinstance(response_part, tuple):
                     msg = email.message_from_bytes(response_part[1])
-                    
+
                     # Décoder le sujet
-                    subject, encoding = decode_header(msg["Subject"])[0]
+                    decoded_header = decode_header(msg["Subject"])[0]
+                    subject = decoded_header[0]
+                    encoding = decoded_header[1]
                     if isinstance(subject, bytes):
                         subject = subject.decode(encoding if encoding else "utf-8")
-                    
+
                     # Extraire le corps de l'e-mail
                     body = ""
                     if msg.is_multipart():
@@ -51,10 +80,11 @@ def monitor_linkedin_emails(email_address, app_password):
                         "sender": msg["From"]
                     })
         mail.logout()
-        return job_offers
+    except imaplib.IMAP4.error as e:
+        logging.error("IMAP error during email monitoring: %s", e)
     except Exception as e:
-        print(f"Erreur lors de la surveillance des e-mails LinkedIn: {e}")
-        return []
+        logging.error("Unexpected error during email monitoring: %s", e)
+    return job_offers
 
 # Exemple d'utilisation (pour les tests)
 if __name__ == '__main__':
@@ -63,16 +93,18 @@ if __name__ == '__main__':
     EMAIL_ADDRESS = os.environ.get("GMAIL_ADDRESS")
     APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
 
-    print("Surveillance des e-mails LinkedIn...")
-    offers = monitor_linkedin_emails(EMAIL_ADDRESS, APP_PASSWORD)
-    if offers:
-        print(f"{len(offers)} offres d'emploi LinkedIn trouvées.")
-        for i, offer in enumerate(offers):
-            print(f"\n--- Offre {i+1} ---")
-            print(f"Sujet: {offer['subject']}")
-            print(f"Expéditeur: {offer['sender']}")
-            print(f"Extrait du corps: {offer['body'][:200]}...")
+    if not EMAIL_ADDRESS or not APP_PASSWORD:
+        logging.warning("GMAIL_ADDRESS or GMAIL_APP_PASSWORD environment variables not set. Skipping email monitoring test.")
     else:
-        print("Aucune offre d'emploi LinkedIn trouvée.")
-
+        logging.info("Surveillance des e-mails LinkedIn...")
+        offers = monitor_linkedin_emails(EMAIL_ADDRESS, APP_PASSWORD)
+        if offers:
+            logging.info("%d offres d'emploi LinkedIn trouvées.", len(offers))
+            for i, offer in enumerate(offers):
+                logging.info("\n--- Offre %d ---", i+1)
+                logging.info("Sujet: %s", offer["subject"])
+                logging.info("Expéditeur: %s", offer["sender"])
+                logging.info("Extrait du corps: %s...", offer["body"][:200])
+        else:
+            logging.info("Aucune offre d'emploi LinkedIn trouvée.")
 

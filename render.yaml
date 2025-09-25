@@ -6,9 +6,9 @@ services:
     buildCommand: |
       cd job-automation-frontend/job-automation-ui && pnpm install && pnpm run build && \
       cd ../../.. && \
-      rm -rf job-automation-backend/job-automation-api/src/static/* && \
-      mkdir -p job-automation-backend/job-automation-api/src/static && \
-      cp -r job-automation-frontend/job-automation-ui/dist/* job-automation-backend/job-automation-api/src/static/ && \
+      rm -rf job-automation-backend/job-automation-api/static/* && \
+      mkdir -p job-automation-backend/job-automation-api/static && \
+      cp -r job-automation-frontend/job-automation-ui/dist/* job-automation-backend/job-automation-api/static/ && \
       cd job-automation-backend/job-automation-api && pip install -r requirements.txt
     startCommand: "gunicorn --chdir src main:app"
     envVars:

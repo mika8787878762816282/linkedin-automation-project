@@ -63,7 +63,7 @@ if __name__ == "__main__":
         "homepage": "https://monsuperprojet.com",
         "private": False
     }
-    github_token = "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" # Votre token réel
+    github_token = os.environ.get("GITHUB_TOKEN", "YOUR_GITHUB_TOKEN_HERE") # Utiliser une variable d'environnement ou un placeholder
     project_url = create_github_project(sample_project_details, github_token)
     if project_url:
         print(f"Projet GitHub créé avec succès: {project_url}")

@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: linkedin-automation-backend
+    env: python
+    # La commande de build va maintenant gérer la construction du frontend et la copie des fichiers statiques
+    buildCommand: |
+      cd job-automation-frontend/job-automation-ui && pnpm install && pnpm run build && \
+      cd ../../.. && \
+      rm -rf job-automation-backend/job-automation-api/src/static/* && \
+      mkdir -p job-automation-backend/job-automation-api/src/static && \
+      cp -r job-automation-frontend/job-automation-ui/dist/* job-automation-backend/job-automation-api/src/static/ && \
+      cd job-automation-backend/job-automation-api && pip install -r requirements.txt
+    startCommand: "gunicorn --chdir src main:app"
+    envVars:
+      - key: GMAIL_ADDRESS
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+    rootDir: job-automation-backend/job-automation-api
+
+  # Le service 'static' pour le frontend est commenté car cette configuration est pour un déploiement en service unique.
+  # Si vous souhaitez déployer le frontend comme un site statique séparé, décommentez cette section et supprimez la logique frontend du buildCommand du backend.
+  # - type: static
+  #   name: linkedin-automation-frontend
+  #   env: static
+  #   buildCommand: "npm install && npm run build"
+  #   publishPath: "dist"
+  #   rootDir: job-automation-frontend/job-automation-ui
+

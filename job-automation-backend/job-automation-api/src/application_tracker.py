@@ -55,7 +55,7 @@ def get_all_applications():
     return _load_applications()
 
 # Exemple d\"utilisation (pour les tests)
-if __name__ == \"__main__\":
+if __name__ == "__main__":
     # Nettoyer le fichier pour un test propre
     if os.path.exists(APPLICATION_FILE):
         os.remove(APPLICATION_FILE)

@@ -4,7 +4,7 @@ services:
     env: python
     # La commande de build va maintenant gérer la construction du frontend et la copie des fichiers statiques
     buildCommand: |
-      cd job-automation-frontend/job-automation-ui && pnpm install && pnpm run build && \
+      cd job-automation-frontend/job-automation-ui && npm install && npm run build && ls -F job-automation-frontend/job-automation-ui/dist/ && \
       cd ../../.. && \
     rm -rf job-automation-backend/job-automation-api/static/* \
       mkdir -p job-automation-backend/job-automation-api/static && \

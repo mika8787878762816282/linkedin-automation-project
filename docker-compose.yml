@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  backend:
+    build: ./job-automation-backend
+    ports:
+      - "5000:5000"
+  frontend:
+    build: ./job-automation-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

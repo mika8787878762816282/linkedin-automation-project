@@ -60,8 +60,8 @@ def monitor_linkedin_emails(email_address, app_password):
 if __name__ == '__main__':
     # Ces informations sont sensibles et ne devraient pas être codées en dur en production.
     # Elles sont ici à titre d'exemple pour le test.
-    EMAIL_ADDRESS = "Michaelsibony0@gmail.com"
-    APP_PASSWORD = "jglx umnj uzgx itld"
+    EMAIL_ADDRESS = os.environ.get("GMAIL_ADDRESS")
+    APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
 
     print("Surveillance des e-mails LinkedIn...")
     offers = monitor_linkedin_emails(EMAIL_ADDRESS, APP_PASSWORD)

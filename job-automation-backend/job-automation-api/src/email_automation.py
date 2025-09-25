@@ -35,8 +35,8 @@ def send_automated_response(sender_email, app_password, recipient_email, subject
 
 # Exemple d\"utilisation (pour les tests)
 if __name__ == \"__main__\":
-    SENDER_EMAIL = \"Michaelsibony0@gmail.com\"
-    APP_PASSWORD = \"jglx umnj uzgx itld\" # Utiliser le mot de passe d\"application
+       SENDER_EMAIL = os.environ.get("GMAIL_ADDRESS")
+    APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD") # Utiliser le mot de passe d\"application
     RECIPIENT_EMAIL = \"test@example.com\" # Remplacez par une adresse e-mail valide pour les tests
     EMAIL_SUBJECT = \"Candidature automatisée - [Votre Nom]\"
     EMAIL_BODY = \"Bonjour,\n\nVotre offre d\"emploi a retenu toute mon attention. Veuillez trouver ci-joint mon CV et un lien vers un projet GitHub pertinent.\n\nCordialement,\n[Votre Nom]\"

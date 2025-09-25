@@ -7,7 +7,7 @@ import os
 from src.routes.automation import automation_bp
 from src.routes.zapier_integration import zapier_bp
 
-app = Flask(__name__, static_folder='./static', static_url_path='/')
+app = Flask(__name__, static_folder='static', static_url_path='/')
 CORS(app) # Active CORS pour toutes les routes
 
 # Enregistrement des blueprints
